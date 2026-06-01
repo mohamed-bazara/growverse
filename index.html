@@ -78,6 +78,19 @@
   nav.scrolled { border-color: var(--rule); }
 
   .nav-logo { display: flex; align-items: center; gap: 11px; text-decoration: none; }
+  .logo-mark {
+    display: block;
+    flex-shrink: 0;
+    color: var(--red);
+  }
+  .logo-mark--nav { width: 34px; height: 34px; }
+  .logo-mark--footer { width: 26px; height: 26px; }
+  .logo-sprite {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
   .nav-logo-text {
     font-family: var(--serif);
     font-weight: 700;
@@ -813,21 +826,17 @@
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 
+<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" class="logo-sprite">
+  <symbol id="gv-logo" viewBox="0 0 100 100">
+    <rect width="100" height="100" rx="24" fill="currentColor"/>
+    <path fill="#FAFAF8" d="M50 18a32 32 0 1 0 28 40l-10-.01a22 22 0 1 1-18-32V18zm0 28h24v8H50v-8z"/>
+  </symbol>
+</svg>
+
 <!-- NAV -->
 <nav id="nav">
   <a href="#" class="nav-logo">
-    <!-- Growverse Logo SVG -->
-    <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Growverse">
-      <!-- Outer ring, partial arc -->
-      <circle cx="17" cy="17" r="15.5" stroke="#8B1A1A" stroke-width="1.5" stroke-dasharray="68 30" stroke-dashoffset="14" fill="none"/>
-      <!-- Inner fill circle, small -->
-      <circle cx="17" cy="17" r="5" fill="#8B1A1A"/>
-      <!-- Growth arrow/upward mark -->
-      <path d="M17 12 L21 17 L18.2 17 L18.2 23 L15.8 23 L15.8 17 L13 17 Z" fill="white"/>
-      <!-- Small satellite dot -->
-      <circle cx="28" cy="9" r="2.5" fill="#8B1A1A" opacity="0.5"/>
-      <line x1="25.7" y1="10.7" x2="23.3" y2="13.3" stroke="#8B1A1A" stroke-width="1" opacity="0.4"/>
-    </svg>
+    <svg class="logo-mark logo-mark--nav" aria-hidden="true"><use href="#gv-logo"/></svg>
     <span class="nav-logo-text">Growverse</span>
   </a>
   <a href="#offer" class="nav-link">Founding Member →</a>
@@ -1029,12 +1038,7 @@
 <!-- FOOTER -->
 <footer>
   <div class="footer-left">
-    <svg width="26" height="26" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="17" cy="17" r="15.5" stroke="#8B1A1A" stroke-width="1.5" stroke-dasharray="68 30" stroke-dashoffset="14" fill="none"/>
-      <circle cx="17" cy="17" r="5" fill="#8B1A1A"/>
-      <path d="M17 12 L21 17 L18.2 17 L18.2 23 L15.8 23 L15.8 17 L13 17 Z" fill="white"/>
-      <circle cx="28" cy="9" r="2.5" fill="#8B1A1A" opacity="0.5"/>
-    </svg>
+    <svg class="logo-mark logo-mark--footer" aria-hidden="true"><use href="#gv-logo"/></svg>
     <span class="footer-logo-text">Growverse</span>
   </div>
   <div class="footer-right">
