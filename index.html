@@ -213,7 +213,7 @@
     margin-bottom: 16px;
   }
   .countdown {
-    display: flex; gap: 16px; justify-content: center; align-items: flex-end;
+    display: flex; gap: 16px; justify-content: center; align-items: flex-start;
   }
   .countdown-box {
     display: flex; flex-direction: column; align-items: center;
@@ -254,7 +254,10 @@
     font-weight: 300;
     color: var(--rule);
     line-height: 1;
-    padding-bottom: 16px;
+    height: 88px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   /* ─── SCROLL HINT ───────────────────────────────────── */
@@ -817,6 +820,7 @@
     .offer-grid { grid-template-columns: 1fr; }
     .countdown { gap: 8px; }
     .countdown-num { width: 70px; height: 70px; font-size: 36px; }
+    .countdown-sep { height: 70px; font-size: 32px; }
   }
 </style>
 </head>
