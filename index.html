@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Growverse — Stop Scrolling. Start Growing.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,300;0,400;0,700;0,900;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red:     #8B1A1A;
+    --red-mid: #A52020;
+    --red-lit: #C0392B;
+    --black:   #0F0F0F;
+    --ink:     #1A1A1A;
+    --body:    #3D3D3D;
+    --muted:   #7A7A7A;
+    --rule:    #DEDEDE;
+    --bg:      #FAFAF8;
+    --cream:   #F5F3EE;
+    --white:   #FFFFFF;
+    --serif:   'Fraunces', Georgia, serif;
+    --sans:    'DM Sans', system-ui, sans-serif;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+    cursor: default;
+  }
+
+  /* ─── CUSTOM CURSOR ─────────────────────────────────── */
+  .cursor {
+    width: 10px; height: 10px;
+    background: var(--red);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease, opacity 0.2s;
+    mix-blend-mode: multiply;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--red);
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.18s ease, width 0.2s ease, height 0.2s ease, opacity 0.3s;
+    opacity: 0.4;
+  }
+
+  /* ─── NAV ───────────────────────────────────────────── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 5vw;
+    height: 68px;
+    background: rgba(250,250,248,0.88);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s;
+  }
+  nav.scrolled { border-color: var(--rule); }
+
+  .nav-logo { display: flex; align-items: center; gap: 11px; text-decoration: none; }
+  .nav-logo-text {
+    font-family: var(--serif);
+    font-weight: 700;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+    color: var(--ink);
+  }
+  .nav-link {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    transition: color 0.2s;
+  }
+  .nav-link:hover { color: var(--red); }
+
+  /* ─── HERO ──────────────────────────────────────────── */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center;
+    padding: 140px 5vw 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-grain {
+    position: absolute; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  /* Decorative red line top */
+  .hero::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent 0%, var(--red) 30%, var(--red-lit) 70%, transparent 100%);
+  }
+
+  .hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 36px;
+    opacity: 0;
+    transform: translateY(16px);
+    animation: fadeUp 0.7s 0.2s ease forwards;
+  }
+  .hero-eyebrow::before, .hero-eyebrow::after {
+    content: '';
+    display: block;
+    width: 28px; height: 1px;
+    background: var(--red);
+    opacity: 0.5;
+  }
+
+  .hero-h1 {
+    font-family: var(--serif);
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 8px;
+    opacity: 0;
+    transform: translateY(24px);
+    animation: fadeUp 0.8s 0.35s ease forwards;
+  }
+  .hero-h1 em {
+    font-style: italic;
+    color: var(--red);
+  }
+
+  .hero-h1-line2 {
+    font-family: var(--serif);
+    font-size: clamp(48px, 8vw, 96px);
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 40px;
+    opacity: 0;
+    transform: translateY(24px);
+    animation: fadeUp 0.8s 0.5s ease forwards;
+  }
+
+  .hero-sub {
+    font-size: clamp(15px, 1.8vw, 18px);
+    font-weight: 300;
+    color: var(--body);
+    max-width: 540px;
+    line-height: 1.7;
+    margin-bottom: 64px;
+    opacity: 0;
+    transform: translateY(18px);
+    animation: fadeUp 0.8s 0.65s ease forwards;
+  }
+
+  /* ─── COUNTDOWN ─────────────────────────────────────── */
+  .countdown-wrap {
+    opacity: 0;
+    transform: translateY(18px);
+    animation: fadeUp 0.8s 0.8s ease forwards;
+    margin-bottom: 16px;
+  }
+  .countdown-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    color: var(--red);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .countdown {
+    display: flex; gap: 16px; justify-content: center; align-items: flex-end;
+  }
+  .countdown-box {
+    display: flex; flex-direction: column; align-items: center;
+    min-width: 80px;
+  }
+  .countdown-num {
+    font-family: var(--serif);
+    font-size: clamp(40px, 6vw, 64px);
+    font-weight: 900;
+    color: var(--ink);
+    line-height: 1;
+    background: var(--white);
+    border: 1px solid var(--rule);
+    width: 88px; height: 88px;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .countdown-num::before {
+    content: '';
+    position: absolute;
+    left: 0; right: 0;
+    top: 50%; height: 1px;
+    background: var(--rule);
+  }
+  .countdown-unit {
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+  .countdown-sep {
+    font-family: var(--serif);
+    font-size: 40px;
+    font-weight: 300;
+    color: var(--rule);
+    line-height: 1;
+    padding-bottom: 16px;
+  }
+
+  /* ─── SCROLL HINT ───────────────────────────────────── */
+  .scroll-hint {
+    position: absolute;
+    bottom: 36px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    opacity: 0;
+    animation: fadeUp 1s 1.4s ease forwards;
+  }
+  .scroll-hint span {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .scroll-line {
+    width: 1px; height: 40px;
+    background: linear-gradient(to bottom, var(--muted), transparent);
+    animation: scrollPulse 2s infinite;
+  }
+  @keyframes scrollPulse {
+    0%, 100% { transform: scaleY(1); opacity: 0.5; }
+    50% { transform: scaleY(0.6); opacity: 1; }
+  }
+
+  /* ─── SECTION SHARED ────────────────────────────────── */
+  section {
+    padding: 100px 5vw;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .section-eyebrow {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .section-eyebrow::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+  .section-title {
+    font-family: var(--serif);
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 48px;
+  }
+  .section-title em {
+    font-style: italic;
+    color: var(--red);
+  }
+
+  /* ─── PROBLEM STATS ─────────────────────────────────── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-bottom: 60px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+  .stat-card {
+    background: var(--white);
+    padding: 48px 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--red);
+    transform: scaleX(0);
+    transition: transform 0.4s ease;
+  }
+  .stat-card:hover::before { transform: scaleX(1); }
+  .stat-card:hover { background: var(--cream); }
+  .stat-num {
+    font-family: var(--serif);
+    font-size: clamp(52px, 6vw, 80px);
+    font-weight: 900;
+    color: var(--red);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+  .stat-label {
+    font-size: 13px;
+    color: var(--body);
+    line-height: 1.5;
+    font-weight: 400;
+  }
+
+  /* ─── FEATURES ──────────────────────────────────────── */
+  .features-section {
+    background: var(--cream);
+    padding: 100px 0;
+  }
+  .features-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 5vw;
+  }
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-top: 48px;
+  }
+  .feature-card {
+    background: var(--cream);
+    padding: 40px 32px 48px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+  .feature-card:hover { background: var(--white); }
+  .feature-num {
+    font-family: var(--serif);
+    font-size: 64px;
+    font-weight: 900;
+    color: var(--red);
+    opacity: 0.12;
+    line-height: 1;
+    margin-bottom: 8px;
+    transition: opacity 0.3s;
+  }
+  .feature-card:hover .feature-num { opacity: 0.2; }
+  .feature-title {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 14px;
+    line-height: 1.2;
+  }
+  .feature-desc {
+    font-size: 14px;
+    color: var(--body);
+    line-height: 1.7;
+    font-weight: 300;
+  }
+  .feature-tag {
+    display: inline-block;
+    margin-top: 20px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--red);
+    border-bottom: 1px solid var(--red);
+    padding-bottom: 2px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .feature-card:hover .feature-tag { opacity: 1; }
+
+  /* ─── OFFER ─────────────────────────────────────────── */
+  .offer-section {
+    padding: 120px 5vw;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .offer-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+  .offer-main {
+    background: var(--red);
+    padding: 60px 52px;
+    position: relative;
+    overflow: hidden;
+  }
+  .offer-main::before {
+    content: 'FOUNDING\nMEMBER';
+    position: absolute;
+    right: -20px; bottom: -30px;
+    font-family: var(--serif);
+    font-size: 80px;
+    font-weight: 900;
+    color: rgba(255,255,255,0.06);
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+    white-space: pre;
+    pointer-events: none;
+  }
+  .offer-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.9);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    margin-bottom: 28px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .offer-title {
+    font-family: var(--serif);
+    font-size: clamp(30px, 3.5vw, 44px);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+  }
+  .offer-sub {
+    font-size: 15px;
+    font-weight: 300;
+    color: rgba(255,255,255,0.75);
+    line-height: 1.6;
+    margin-bottom: 36px;
+  }
+  .offer-perks {
+    list-style: none;
+    margin-bottom: 44px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .offer-perks li {
+    display: flex; align-items: flex-start; gap: 12px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.88);
+    font-weight: 400;
+    line-height: 1.5;
+  }
+  .perk-dot {
+    width: 6px; height: 6px;
+    background: rgba(255,255,255,0.6);
+    border-radius: 50%;
+    margin-top: 6px;
+    flex-shrink: 0;
+  }
+  .offer-price {
+    display: flex; align-items: baseline; gap: 10px;
+    margin-bottom: 28px;
+  }
+  .price-amount {
+    font-family: var(--serif);
+    font-size: 52px;
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1;
+  }
+  .price-note {
+    font-size: 13px;
+    color: rgba(255,255,255,0.6);
+    font-weight: 300;
+  }
+  .btn-primary {
+    display: block;
+    width: 100%;
+    padding: 18px 32px;
+    background: var(--white);
+    color: var(--red);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    text-decoration: none;
+  }
+  .btn-primary:hover {
+    background: var(--cream);
+    transform: translateY(-1px);
+  }
+
+  .offer-support {
+    background: var(--white);
+    padding: 60px 52px;
+    display: flex;
+    flex-direction: column;
+  }
+  .offer-support-title {
+    font-family: var(--serif);
+    font-size: clamp(22px, 2.5vw, 32px);
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 16px;
+    line-height: 1.2;
+  }
+  .offer-support-sub {
+    font-size: 14px;
+    font-weight: 300;
+    color: var(--body);
+    line-height: 1.7;
+    margin-bottom: 36px;
+  }
+  .amount-note {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 32px;
+    padding: 16px 20px;
+    border-left: 3px solid var(--rule);
+    font-style: italic;
+  }
+  .amount-display {
+    font-family: var(--serif);
+    font-size: 44px;
+    font-weight: 900;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+  .amount-label {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+  .btn-secondary {
+    display: block;
+    width: 100%;
+    padding: 18px 32px;
+    background: transparent;
+    color: var(--red);
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-align: center;
+    border: 1.5px solid var(--red);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    margin-bottom: 16px;
+  }
+  .btn-secondary:hover {
+    background: var(--red);
+    color: var(--white);
+  }
+
+  /* ─── SOCIAL PROOF ──────────────────────────────────── */
+  .social-proof-bar {
+    background: var(--cream);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 28px 5vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+  .proof-count {
+    font-family: var(--serif);
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--red);
+    letter-spacing: -0.02em;
+  }
+  .proof-text {
+    font-size: 14px;
+    color: var(--body);
+    font-weight: 300;
+  }
+  .proof-dots {
+    display: flex; gap: 6px;
+  }
+  .proof-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--red);
+    opacity: 0.2;
+    animation: pulseDot 2s infinite;
+  }
+  .proof-dot:nth-child(2) { animation-delay: 0.3s; }
+  .proof-dot:nth-child(3) { animation-delay: 0.6s; }
+  @keyframes pulseDot {
+    0%, 100% { opacity: 0.2; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.3); }
+  }
+
+  /* ─── VISION SECTION ────────────────────────────────── */
+  .vision-section {
+    padding: 120px 5vw;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .vision-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: start;
+  }
+  .vision-left .section-title { margin-bottom: 24px; }
+  .vision-desc {
+    font-size: 15px;
+    color: var(--body);
+    line-height: 1.75;
+    font-weight: 300;
+    margin-bottom: 40px;
+  }
+  .vision-milestones {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border-left: 2px solid var(--rule);
+    padding-left: 24px;
+  }
+  .milestone {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+  .milestone::before {
+    content: '';
+    position: absolute;
+    left: -29px; top: 50%;
+    transform: translateY(-50%);
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--rule);
+    border: 2px solid var(--bg);
+    transition: background 0.3s;
+  }
+  .milestone.active::before { background: var(--red); }
+  .milestone-phase {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--red);
+    margin-bottom: 4px;
+  }
+  .milestone-title {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+  .milestone-items {
+    font-size: 13px;
+    color: var(--muted);
+    font-weight: 300;
+    line-height: 1.6;
+  }
+  .vision-right {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+  .vision-feature {
+    background: var(--white);
+    padding: 24px 28px;
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    transition: background 0.2s;
+  }
+  .vision-feature:hover { background: var(--cream); }
+  .vf-icon {
+    width: 40px; height: 40px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid var(--rule);
+    background: var(--cream);
+    color: var(--red);
+    font-size: 16px;
+  }
+  .vf-title {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .vf-desc {
+    font-size: 13px;
+    color: var(--body);
+    font-weight: 300;
+    line-height: 1.55;
+  }
+
+  /* ─── EMAIL CAPTURE ─────────────────────────────────── */
+  .email-section {
+    background: var(--ink);
+    padding: 100px 5vw;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .email-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--red);
+  }
+  .email-title {
+    font-family: var(--serif);
+    font-size: clamp(28px, 3.5vw, 44px);
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+  }
+  .email-sub {
+    font-size: 15px;
+    color: rgba(255,255,255,0.5);
+    font-weight: 300;
+    margin-bottom: 40px;
+    max-width: 440px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.7;
+  }
+  .email-form {
+    display: flex;
+    max-width: 460px;
+    margin: 0 auto 16px;
+    border: 1px solid rgba(255,255,255,0.15);
+    overflow: hidden;
+  }
+  .email-input {
+    flex: 1;
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.06);
+    border: none;
+    color: var(--white);
+    font-family: var(--sans);
+    font-size: 14px;
+    outline: none;
+    font-weight: 300;
+  }
+  .email-input::placeholder { color: rgba(255,255,255,0.3); }
+  .email-btn {
+    padding: 16px 24px;
+    background: var(--red);
+    color: var(--white);
+    border: none;
+    font-family: var(--sans);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s;
+    white-space: nowrap;
+  }
+  .email-btn:hover { background: var(--red-lit); }
+  .email-note {
+    font-size: 12px;
+    color: rgba(255,255,255,0.25);
+    font-weight: 300;
+  }
+
+  /* ─── FOOTER ────────────────────────────────────────── */
+  footer {
+    padding: 40px 5vw;
+    border-top: 1px solid var(--rule);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .footer-left {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .footer-logo-text {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+  .footer-note {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 300;
+  }
+  .footer-right {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 300;
+    text-align: right;
+  }
+
+  /* ─── ANIMATIONS ────────────────────────────────────── */
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(28px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Stagger children */
+  .stagger > * { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .stagger.visible > *:nth-child(1) { opacity:1; transform:none; transition-delay:0s; }
+  .stagger.visible > *:nth-child(2) { opacity:1; transform:none; transition-delay:0.12s; }
+  .stagger.visible > *:nth-child(3) { opacity:1; transform:none; transition-delay:0.24s; }
+  .stagger.visible > *:nth-child(4) { opacity:1; transform:none; transition-delay:0.36s; }
+  .stagger.visible > *:nth-child(5) { opacity:1; transform:none; transition-delay:0.48s; }
+  .stagger.visible > *:nth-child(6) { opacity:1; transform:none; transition-delay:0.6s; }
+
+  @media (max-width: 768px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .features-grid { grid-template-columns: 1fr; }
+    .offer-grid { grid-template-columns: 1fr; }
+    .vision-grid { grid-template-columns: 1fr; }
+    .countdown { gap: 8px; }
+    .countdown-num { width: 70px; height: 70px; font-size: 36px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Custom cursor -->
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="nav">
+  <a href="#" class="nav-logo">
+    <!-- Growverse Logo SVG -->
+    <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Growverse">
+      <!-- Outer ring, partial arc -->
+      <circle cx="17" cy="17" r="15.5" stroke="#8B1A1A" stroke-width="1.5" stroke-dasharray="68 30" stroke-dashoffset="14" fill="none"/>
+      <!-- Inner fill circle, small -->
+      <circle cx="17" cy="17" r="5" fill="#8B1A1A"/>
+      <!-- Growth arrow/upward mark -->
+      <path d="M17 12 L21 17 L18.2 17 L18.2 23 L15.8 23 L15.8 17 L13 17 Z" fill="white"/>
+      <!-- Small satellite dot -->
+      <circle cx="28" cy="9" r="2.5" fill="#8B1A1A" opacity="0.5"/>
+      <line x1="25.7" y1="10.7" x2="23.3" y2="13.3" stroke="#8B1A1A" stroke-width="1" opacity="0.4"/>
+    </svg>
+    <span class="nav-logo-text">Growverse</span>
+  </a>
+  <a href="#offer" class="nav-link">Founding Member →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" style="max-width:100%; padding-top:140px;">
+  <div class="hero-grain"></div>
+
+  <p class="hero-eyebrow">Jetzt in der Pre-Launch Phase</p>
+
+  <h1 class="hero-h1">Stop Scrolling.</h1>
+  <p class="hero-h1-line2">Start Growing.</p>
+
+  <p class="hero-sub">
+    Die erste Social-Media-Plattform, die nicht davon profitiert,
+    wie lange du scrollst — sondern davon, wie sehr du wächst.
+  </p>
+
+  <div class="countdown-wrap">
+    <p class="countdown-label">Launch in</p>
+    <div class="countdown">
+      <div class="countdown-box">
+        <div class="countdown-num" id="cd-days">14</div>
+        <div class="countdown-unit">Tage</div>
+      </div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-box">
+        <div class="countdown-num" id="cd-hours">08</div>
+        <div class="countdown-unit">Stunden</div>
+      </div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-box">
+        <div class="countdown-num" id="cd-mins">44</div>
+        <div class="countdown-unit">Minuten</div>
+      </div>
+      <div class="countdown-sep">:</div>
+      <div class="countdown-box">
+        <div class="countdown-num" id="cd-secs">22</div>
+        <div class="countdown-unit">Sekunden</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <span>Mehr erfahren</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF BAR -->
+<div class="social-proof-bar reveal">
+  <div class="proof-dots">
+    <div class="proof-dot"></div>
+    <div class="proof-dot"></div>
+    <div class="proof-dot"></div>
+  </div>
+  <span class="proof-count" id="proof-count">2.847</span>
+  <span class="proof-text">Menschen warten bereits auf den Launch.</span>
+</div>
+
+<!-- PROBLEM -->
+<section style="padding: 100px 5vw; max-width:1100px; margin:0 auto;">
+  <p class="section-eyebrow reveal">Das Problem</p>
+  <h2 class="section-title reveal">Social Media ist kaputt.<br><em>Absichtlich.</em></h2>
+
+  <div class="stats-grid stagger">
+    <div class="stat-card">
+      <div class="stat-num">82%</div>
+      <div class="stat-label">bezeichnen Social Media<br>als süchtig machend</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">73%</div>
+      <div class="stat-label">18–24-Jährige sagen,<br>Social Media schadet ihrer Gesundheit</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">40%</div>
+      <div class="stat-label">wünschen sich, TikTok & Co.<br>wären nie erfunden worden</div>
+    </div>
+  </div>
+
+  <p class="reveal" style="font-size:16px; color:var(--body); font-weight:300; line-height:1.8; max-width:680px;">
+    Meta, TikTok und YouTube verdienen ausschließlich an deiner Screen Time.
+    Mehr Scrollzeit bedeutet mehr Werbeeinnahmen — deshalb ist der Algorithmus darauf ausgelegt,
+    dich süchtig zu machen. Das ist kein Bug. Das ist das Fundament.
+  </p>
+</section>
+
+<!-- FEATURES -->
+<div class="features-section">
+  <div class="features-inner">
+    <p class="section-eyebrow reveal">Die Lösung</p>
+    <h2 class="section-title reveal">Eine Plattform,<br><em>die für dich arbeitet.</em></h2>
+
+    <div class="features-grid stagger">
+      <div class="feature-card">
+        <div class="feature-num">01</div>
+        <div class="feature-title">Communities & Chaträume</div>
+        <div class="feature-desc">Thematische Räume für gleiche Ziele — Karriere, Sport, mentale Gesundheit, Finanzen. Menschen die denselben Weg gehen, finden sich.</div>
+        <span class="feature-tag">Community</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">02</div>
+        <div class="feature-title">Growth Score</div>
+        <div class="feature-desc">Kein Like-System. Punkte für echte Aktivität: gehaltene Streaks, hilfreiche Beiträge, erreichte Meilensteine. Fortschritt wird sichtbar.</div>
+        <span class="feature-tag">Fortschritt</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">03</div>
+        <div class="feature-title">Accountability-Partner</div>
+        <div class="feature-desc">Automatisches Matching mit jemandem, der dieselben Ziele verfolgt. Ein digitaler Gym-Buddy, der regelmäßig deinen Fortschritt einfordert.</div>
+        <span class="feature-tag">Verantwortung</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">04</div>
+        <div class="feature-title">eBook-Marktplatz</div>
+        <div class="feature-desc">Kuratierte Selbstentwicklungs-eBooks von externen Autoren und KI-generierte Inhalte — direkt in der Plattform.</div>
+        <span class="feature-tag">Wissen</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">05</div>
+        <div class="feature-title">Community Challenges</div>
+        <div class="feature-desc">Gemeinsame Ziele über 30, 60 oder 90 Tage. Alle Teilnehmer sehen den Fortschritt der anderen in Echtzeit.</div>
+        <span class="feature-tag">Challenges</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-num">06</div>
+        <div class="feature-title">Verifizierte Experten</div>
+        <div class="feature-desc">Strukturierte Lernpfade von Menschen, die das Ziel bereits erreicht haben. Kein endloses Scrollen — ein klarer Weg.</div>
+        <span class="feature-tag">Expertise</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OFFER -->
+<div class="offer-section" id="offer">
+  <p class="section-eyebrow reveal">Founding Member Angebot</p>
+  <h2 class="section-title reveal">Glaube an die Mission,<br><em>bevor die Welt davon weiß.</em></h2>
+
+  <div class="offer-grid reveal">
+    <!-- Main offer -->
+    <div class="offer-main">
+      <div class="offer-badge">Limitiert · Founding Member</div>
+      <h3 class="offer-title">Lebenslanger<br>Premium-Zugang.</h3>
+      <p class="offer-sub">Einmal zahlen. Für immer dabei. Als Mitglied der ersten Generation die an Growverse geglaubt hat.</p>
+      <ul class="offer-perks">
+        <li><span class="perk-dot"></span>Lebenslanger Zugang zu allen Abo-Stufen — Premium, API, Coaching</li>
+        <li><span class="perk-dot"></span>Permanentes Founding Member Abzeichen auf dem Profil</li>
+        <li><span class="perk-dot"></span>Kein monatliches Abo, keine Folgekosten, keine Überraschungen</li>
+        <li><span class="perk-dot"></span>Frühzeitiger Zugang zu allen neuen Features</li>
+        <li><span class="perk-dot"></span>Direkter Einfluss auf die Weiterentwicklung der Plattform</li>
+      </ul>
+      <div class="offer-price">
+        <span class="price-amount">40€</span>
+        <span class="price-note">einmalig · für immer</span>
+      </div>
+      <a href="#" class="btn-primary">Jetzt Founding Member werden</a>
+    </div>
+
+    <!-- Support option -->
+    <div class="offer-support">
+      <h3 class="offer-support-title">Ich glaube noch<br>stärker an diese Mission.</h3>
+      <p class="offer-support-sub">Du erhältst exakt dieselben Vorteile wie alle Founding Members. Diese Option ist für alle, die mehr beitragen wollen als die 40€ — weil sie an die Idee glauben.</p>
+      <div class="amount-note">
+        Kein Unterschied in Features oder Status. Nur für Menschen, die mehr geben wollen als verlangt wird.
+      </div>
+
+      <div class="amount-display" id="custom-amount">60€</div>
+      <div class="amount-label">Dein Beitrag</div>
+
+      <div style="display:flex; gap:8px; margin-bottom:24px; flex-wrap:wrap;">
+        <button onclick="setAmount('60€')" style="padding:8px 16px; border:1px solid var(--rule); background:var(--cream); font-family:var(--sans); font-size:13px; cursor:pointer; font-weight:500; color:var(--ink); transition:all 0.2s;">60€</button>
+        <button onclick="setAmount('80€')" style="padding:8px 16px; border:1px solid var(--rule); background:var(--cream); font-family:var(--sans); font-size:13px; cursor:pointer; font-weight:500; color:var(--ink); transition:all 0.2s;">80€</button>
+        <button onclick="setAmount('100€')" style="padding:8px 16px; border:1px solid var(--rule); background:var(--cream); font-family:var(--sans); font-size:13px; cursor:pointer; font-weight:500; color:var(--ink); transition:all 0.2s;">100€</button>
+        <button onclick="setAmount('150€')" style="padding:8px 16px; border:1px solid var(--rule); background:var(--cream); font-family:var(--sans); font-size:13px; cursor:pointer; font-weight:500; color:var(--ink); transition:all 0.2s;">150€</button>
+      </div>
+
+      <a href="#" class="btn-secondary">Mission unterstützen</a>
+      <p style="font-size:12px; color:var(--muted); font-weight:300; line-height:1.6;">
+        Dieselben Founding Member Vorteile wie das 40€ Angebot.
+        Kein Aufpreis für Features — nur mehr Unterstützung für die Mission.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- EMAIL CAPTURE -->
+<div class="email-section">
+  <h2 class="email-title">Noch nicht bereit zu zahlen?</h2>
+  <p class="email-sub">Trag dich für den kostenlosen Launch ein und sei dabei, wenn es losgeht.</p>
+  <div class="email-form">
+    <input class="email-input" type="email" placeholder="deine@email.de">
+    <button class="email-btn">Dabei sein</button>
+  </div>
+  <p class="email-note">Kein Spam. Nur eine E-Mail wenn Growverse live geht.</p>
+</div>
+
+<!-- VISION -->
+<div class="vision-section">
+  <div class="vision-grid">
+    <div class="vision-left reveal">
+      <p class="section-eyebrow">Die langfristige Vision</p>
+      <h2 class="section-title">Wohin die Reise geht.</h2>
+      <p class="vision-desc">
+        Growverse startet mit Communities, Growth Score und dem eBook-Marktplatz.
+        Was folgt, ist eine vollständige Plattform — mit nativen Apps, eigenen KI-Modellen
+        und einem Content Creator Programm.
+      </p>
+      <div class="vision-milestones">
+        <div class="milestone active">
+          <div class="milestone-phase">Launch — Q3 2026</div>
+          <div class="milestone-title">MVP & Community</div>
+          <div class="milestone-items">Communities · Growth Score · Accountability · eBook-Marktplatz</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-phase">Seed — 2027</div>
+          <div class="milestone-title">Native Apps & Experten</div>
+          <div class="milestone-items">iOS & Android · Expertenverzeichnis · API-Plattform</div>
+        </div>
+        <div class="milestone">
+          <div class="milestone-phase">Scale — 2028+</div>
+          <div class="milestone-title">Eigene KI & Expansion</div>
+          <div class="milestone-items">Eigene KI-Modelle · Content Creator · International</div>
+        </div>
+      </div>
+    </div>
+    <div class="vision-right reveal" style="align-self:start;">
+      <div class="vision-feature">
+        <div class="vf-icon">↑</div>
+        <div>
+          <div class="vf-title">Algorithmus für Wachstum</div>
+          <div class="vf-desc">KI-gestützt, aber nicht darauf ausgelegt, dich süchtig zu machen.</div>
+        </div>
+      </div>
+      <div class="vision-feature">
+        <div class="vf-icon">◎</div>
+        <div>
+          <div class="vf-title">Anonymer Modus</div>
+          <div class="vf-desc">Für sensible Themen — Beiträge ohne Profilverknüpfung.</div>
+        </div>
+      </div>
+      <div class="vision-feature">
+        <div class="vf-icon">⊞</div>
+        <div>
+          <div class="vf-title">Lernpfade</div>
+          <div class="vf-desc">Kuratierte Abfolgen statt endlosem Scrollen.</div>
+        </div>
+      </div>
+      <div class="vision-feature">
+        <div class="vf-icon">✦</div>
+        <div>
+          <div class="vf-title">Freemium — immer</div>
+          <div class="vf-desc">Die Plattform bleibt kostenlos nutzbar. Echten Mehrwert zuerst.</div>
+        </div>
+      </div>
+      <div class="vision-feature">
+        <div class="vf-icon">◈</div>
+        <div>
+          <div class="vf-title">Keine Werbung</div>
+          <div class="vf-desc">Einnahmen durch echten Mehrwert, nicht durch Aufmerksamkeitsverkauf.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <svg width="26" height="26" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="17" cy="17" r="15.5" stroke="#8B1A1A" stroke-width="1.5" stroke-dasharray="68 30" stroke-dashoffset="14" fill="none"/>
+      <circle cx="17" cy="17" r="5" fill="#8B1A1A"/>
+      <path d="M17 12 L21 17 L18.2 17 L18.2 23 L15.8 23 L15.8 17 L13 17 Z" fill="white"/>
+      <circle cx="28" cy="9" r="2.5" fill="#8B1A1A" opacity="0.5"/>
+    </svg>
+    <span class="footer-logo-text">Growverse</span>
+    <span class="footer-note">· GmbH-Gründung Juni 2026</span>
+  </div>
+  <div class="footer-right">
+    Mohamed Bazara · Karim Marabouni · Seywan Mohammed<br>
+    <span style="opacity:0.5;">Demo Landing Page — nicht die finale Version</span>
+  </div>
+</footer>
+
+<script>
+  // ─── CUSTOM CURSOR ───────────────────────────────────
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  let mx = 0, my = 0, rx = 0, ry = 0;
+  document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+  function animCursor() {
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+    rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+    ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+    requestAnimationFrame(animCursor);
+  }
+  animCursor();
+
+  // ─── NAV SCROLL ──────────────────────────────────────
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // ─── COUNTDOWN ───────────────────────────────────────
+  const launch = new Date(Date.now() + (14 * 86400 + 8 * 3600 + 44 * 60 + 22) * 1000);
+  function updateCountdown() {
+    const diff = Math.max(0, launch - Date.now());
+    const d = Math.floor(diff / 86400000);
+    const h = Math.floor((diff % 86400000) / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    const pad = n => String(n).padStart(2,'0');
+    const setEl = (id, v, prev) => {
+      const el = document.getElementById(id);
+      if (el.textContent !== v) {
+        el.style.transform = 'scale(0.9)';
+        el.style.opacity = '0.4';
+        setTimeout(() => {
+          el.textContent = v;
+          el.style.transform = 'scale(1)';
+          el.style.opacity = '1';
+          el.style.transition = 'transform 0.25s ease, opacity 0.25s ease';
+        }, 100);
+      }
+    };
+    setEl('cd-days', pad(d));
+    setEl('cd-hours', pad(h));
+    setEl('cd-mins', pad(m));
+    setEl('cd-secs', pad(s));
+  }
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+
+  // ─── PROOF COUNT ANIMATION ───────────────────────────
+  function animateCount(el, target, duration) {
+    const start = 0;
+    const step = (timestamp) => {
+      if (!step.start) step.start = timestamp;
+      const progress = Math.min((timestamp - step.start) / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3);
+      el.textContent = Math.floor(ease * target).toLocaleString('de-DE');
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  // ─── SCROLL REVEAL ───────────────────────────────────
+  const reveals = document.querySelectorAll('.reveal, .stagger');
+  let countStarted = false;
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        if (e.target.id === 'proof-count' || e.target.classList.contains('social-proof-bar')) {
+          if (!countStarted) {
+            countStarted = true;
+            setTimeout(() => animateCount(document.getElementById('proof-count'), 2847, 1800), 400);
+          }
+        }
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(r => obs.observe(r));
+  // also observe proof bar
+  obs.observe(document.querySelector('.social-proof-bar'));
+
+  // ─── CUSTOM AMOUNT ───────────────────────────────────
+  function setAmount(val) {
+    const el = document.getElementById('custom-amount');
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(6px)';
+    setTimeout(() => {
+      el.textContent = val;
+      el.style.transition = 'opacity 0.2s, transform 0.2s';
+      el.style.opacity = '1';
+      el.style.transform = 'translateY(0)';
+    }, 120);
+  }
+</script>
+</body>
+</html>
